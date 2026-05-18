@@ -2,7 +2,11 @@
 
 import axios from 'axios'
 
-const API_BASE = '/api'
+// In production (Railway + Vercel), VITE_API_URL is the full Railway backend URL.
+// In local dev it's empty and the Vite proxy (vite.config.ts) forwards /api → localhost:8000.
+const API_BASE = import.meta.env.VITE_API_URL
+  ? `${import.meta.env.VITE_API_URL}/api`
+  : '/api'
 
 // Create axios instance
 const api = axios.create({
@@ -122,7 +126,7 @@ export const exportCSV = (quarter?: string) => {
   const token = localStorage.getItem('meridian_token')
   const params = new URLSearchParams()
   if (quarter) params.set('quarter', quarter)
-  const url = `/api/reports/export?${params.toString()}`
+  const url = `${API_BASE}/reports/export?${params.toString()}`
   const link = document.createElement('a')
   link.href = url
   link.download = `meridian_report_${quarter || 'all'}.csv`
